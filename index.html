@@ -2,15 +2,42 @@
 <html>
 <body>
 
-<p id="demo">Let AJAX change this text.</p>
-	<div id="chartContainer" style="height: 300px; width:100%;">
+<div id="demo">Let AJAX change this text.</div>
+<div id="change">People who are here:</div>
+<style>
+#demo {
+  width:100px;
+  height:100px;
+  border-radius:50px;
+  font-size:70px;
+  color:#fff;
+  line-height:100px;
+  text-align:center;
+  background:#000;
+  position:relative;
+  left:1300px;
+  top:30px;
+  }
+#change {
+  font-size:70px;
+  position:relative;
+  left:500px;
+  top:-50px;
+  }
+</style>
+
+	<div id="chartContainer" style="height: 600px; width:100%;">
 	</div>
 <button type="button"
-onclick="loadDoc('data2.txt', myFunction)">Change Content
+onclick="changeText()">Change Content
 </button>
 
 <script>
 var MyApp = {};
+function changeText() {
+  document.getElementById("change").innerHTML='People left before me:';
+}
+
 function loadDoc(url, cfunc) {
   var xhttp;
   xhttp=new XMLHttpRequest();
@@ -23,13 +50,13 @@ function loadDoc(url, cfunc) {
   xhttp.send();
 }
 function myFunction(xhttp) {
-  document.getElementById("demo").innerHTML = xhttp.responseText;
   //alert(xhttp.responseText);
   MyApp.dataVal = JSON.parse(xhttp.responseText);
   MyApp.realdataVal = MyApp.dataVal;
   //alert(MyApp.realdataVal);
+  document.getElementById("demo").innerHTML = MyApp.realdataVal;
 }
-loadDoc('data.txt', myFunction);
+loadDoc('havelock.csv', myFunction);
 
 	window.onload = function () {
 
@@ -37,26 +64,27 @@ loadDoc('data.txt', myFunction);
 
 		var chart = new CanvasJS.Chart("chartContainer",{
 			title :{
-				text: "Live Random Data"
+				text: ""
 			},			
 			data: [{
 				type: "line",
+				lineThickness: 5,
 				dataPoints: dps 
 			}]
 		});
 
 		var xVal = 0;
-		var yVal = 100;	
+		var yVal = 1;	
 		var updateInterval = 100;
-		var dataLength = 500; // number of dataPoints visible at any point
+		var dataLength = 5000; // number of dataPoints visible at any point
 
 		var updateChart = function (count) {
 			count = count || 1;
 			// count is number of times loop runs to generate random dataPoints.
 			
 			for (var j = 0; j < count; j++) {	
-				loadDoc('data.txt', myFunction);
- 				yVal = yVal + MyApp.realdataVal;
+				loadDoc('havelock.csv', myFunction);
+ 				yVal = MyApp.realdataVal;
  				dps.push({
  					x: xVal,
  					y: yVal
