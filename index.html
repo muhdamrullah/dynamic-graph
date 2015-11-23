@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<p id="demo">Let AJAX change this text.</p>
+	<div id="chartContainer" style="height: 300px; width:100%;">
+	</div>
+<button type="button"
+onclick="loadDoc('data2.txt', myFunction)">Change Content
+</button>
+
+<script>
+var MyApp = {};
+function loadDoc(url, cfunc) {
+  var xhttp;
+  xhttp=new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (xhttp.readyState == 4 && xhttp.status == 200) {
+      cfunc(xhttp);
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.send();
+}
+function myFunction(xhttp) {
+  document.getElementById("demo").innerHTML = xhttp.responseText;
+  //alert(xhttp.responseText);
+  MyApp.dataVal = JSON.parse(xhttp.responseText);
+  MyApp.realdataVal = MyApp.dataVal;
+  //alert(MyApp.realdataVal);
+}
+loadDoc('data.txt', myFunction);
+
+	window.onload = function () {
+
+		var dps = []; // dataPoints
+
+		var chart = new CanvasJS.Chart("chartContainer",{
+			title :{
+				text: "Live Random Data"
+			},			
+			data: [{
+				type: "line",
+				dataPoints: dps 
+			}]
+		});
+
+		var xVal = 0;
+		var yVal = 100;	
+		var updateInterval = 100;
+		var dataLength = 500; // number of dataPoints visible at any point
+
+		var updateChart = function (count) {
+			count = count || 1;
+			// count is number of times loop runs to generate random dataPoints.
+			
+			for (var j = 0; j < count; j++) {	
+				loadDoc('data.txt', myFunction);
+ 				yVal = yVal + MyApp.realdataVal;
+ 				dps.push({
+ 					x: xVal,
+ 					y: yVal
+ 				});
+ 				xVal++;
+ 			};
+ 			if (dps.length > dataLength)
+			{
+				dps.shift();				
+			}
+			
+			chart.render();		
+
+		};
+
+		// generates first set of dataPoints
+		updateChart(dataLength); 
+
+		// update chart after specified time. 
+		setInterval(function(){updateChart()}, updateInterval); 
+
+	}
+	</script>
+	<script type="text/javascript" src="canvasjs.min.js"></script>
+</script>
+
+
+</body>
+</html>
